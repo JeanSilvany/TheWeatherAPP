@@ -4,79 +4,82 @@ import axios from 'axios';
 
 const TheWeather = () => {
   const [data, setData] = useState([]);
+  const [dataInterface, setDataInterface] = useState([]);
   useEffect(() => {
     getData();
   }, []);
+
+  const imgInterface = {
+    cloud: 'https://i.ibb.co/Q6FdPwt/cloud.png',
+    rain: 'https://i.ibb.co/rQntvVv/rain.png',
+    clear_day: 'https://i.ibb.co/xYC6Mt6/sunny.png',
+    cloudly_day: 'https://i.ibb.co/fS5jsTM/cloudday.png',
+    cloudly_night: 'https://i.ibb.co/NLRr140/cloudly-night.png',
+  };
 
   const getData = () => {
     axios
       .get('https://api.hgbrasil.com/weather')
       .then(function (response) {
         // handle success
-        setData(response.data.results);
-        console.log(response.data.results);
+        setData(response.data.results.forecast);
+        setDataInterface(response.data.results);
+        console.log(data, dataInterface);
       })
       .catch(function (error) {
         // handle error
         console.log(error);
       });
   };
-  // const data = [
-  //   {
-  //     hour: '9:00 AM',
-  //     image:
-  //       'https://icon-library.com/images/thunderstorm-icon/thunderstorm-icon-21.jpg',
-  //     temp: '23º',
-  //   },
-  //   {
-  //     hour: '10:00 AM',
-  //     image:
-  //       'https://icon-library.com/images/thunderstorm-icon/thunderstorm-icon-21.jpg',
-  //     temp: '23º',
-  //   },
-  //   {
-  //     hour: '11:00 AM',
-  //     image:
-  //       'https://icon-library.com/images/thunderstorm-icon/thunderstorm-icon-21.jpg',
-  //     temp: '24º',
-  //   },
-  // ];
 
   const renderItem = ({item}) => {
     return (
       <View
         style={{
-          backgroundColor: '#88D9FB',
-          width: 100,
-          height: 175,
           flex: 1,
           justifyContent: 'space-around',
           alignItems: 'center',
-          borderRadius: 15,
-          flexGrow: 1,
-          margin: 10,
-          flexBasis: 0,
         }}>
-        <View>
-          <Text style={{color: '#5D8DB2'}}>{item.time}</Text>
-        </View>
-        <View>
-          <Image
-            resizeMode="contain"
-            style={{width: 50, height: 50, alignSelf: 'center'}}
-            source={{
-              uri: 'https://icon-library.com/images/thunderstorm-icon/thunderstorm-icon-21.jpg',
-            }}
-          />
-        </View>
-        <View>
-          <Text style={{fontWeight: 'bold', fontSize: 25, color: '#46517C'}}>
-            {item.temp}
-          </Text>
+        <Text style={{color: '#4195C0'}}>{item.weekday}</Text>
+
+        <View
+          style={{
+            backgroundColor: '#88D9FB',
+            width: 100,
+            height: 175,
+            flex: 1,
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            borderRadius: 15,
+            flexGrow: 1,
+            margin: 10,
+            flexBasis: 0,
+          }}>
+          <View>
+            <Text style={{color: '#5D8DB2'}}>{item.date}</Text>
+          </View>
+          <View>
+            <Image
+              resizeMode="contain"
+              style={{width: 50, height: 50, alignSelf: 'center'}}
+              source={{
+                uri: 'https://icon-library.com/images/thunderstorm-icon/thunderstorm-icon-21.jpg',
+              }}
+            />
+          </View>
+          <View style={{alignItems: 'center'}}>
+            <Text style={{fontWeight: 'bold', fontSize: 15, color: '#46517C'}}>
+              Min {item.min}º
+            </Text>
+            <Text style={{fontWeight: 'bold', fontSize: 15, color: '#46517C'}}>
+              Max {item.max}º
+            </Text>
+          </View>
         </View>
       </View>
     );
   };
+
   return (
     <View
       style={{
@@ -106,7 +109,7 @@ const TheWeather = () => {
           fontWeight: 'bold',
           margin: 10,
         }}>
-        {data.city}
+        {dataInterface.city}
       </Text>
       <Text
         style={{
@@ -115,7 +118,7 @@ const TheWeather = () => {
           alignSelf: 'center',
           color: '#2F2F61',
         }}>
-        {data.temp}º
+        {dataInterface.temp}º
       </Text>
       <View
         style={{
@@ -130,7 +133,7 @@ const TheWeather = () => {
               uri: 'https://image.flaticon.com/icons/png/512/91/91977.png',
             }}
           />
-          <Text style={{color: '#357190'}}>{data.wind_speedy}</Text>
+          <Text style={{color: '#357190'}}>{dataInterface.wind_speedy}</Text>
         </View>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Image
@@ -139,30 +142,16 @@ const TheWeather = () => {
               uri: 'https://image.flaticon.com/icons/png/512/31/31823.png',
             }}
           />
-          <Text style={{color: '#357190'}}>{data.humidity}%</Text>
+          <Text style={{color: '#357190'}}>{dataInterface.humidity}%</Text>
         </View>
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          margin: 10,
-        }}>
-        <View>
-          <Text style={{color: '#4195C0'}}>Today, 18 Sep</Text>
-        </View>
-        <View>
-          <Text style={{color: '#4195C0'}}>Mon, 19 Sep</Text>
-        </View>
-        <View>
-          <Text style={{color: '#4195C0'}}>Tue, 20 Sep</Text>
-        </View>
-      </View>
+
       <FlatList
+        keyExtractor={item => item._id}
         data={data}
         renderItem={renderItem}
-        numColumns={3}
-        style={{margin: 10}}
+        horizontal
+        style={{margin: 10, flex: 1}}
       />
     </View>
   );
